@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bugzy Test Playground</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f9;
+      color: #222;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      color: #0078d7;
+      text-align: center;
+    }
+    button {
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      margin: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .box {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input {
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bugzy Console & Network Test Site</h1>
+  
+  <div class="box">
+    <h3>🧠 Console Log Tests</h3>
+    <button onclick="logInfo()">Log Info</button>
+    <button onclick="logWarn()">Log Warning</button>
+    <button onclick="logError()">Log Error</button>
+    <button onclick="throwError()">Throw JS Error</button>
+  </div>
+
+  <div class="box">
+    <h3>🌐 Network Request Tests</h3>
+    <button onclick="makeGet()">Fetch GET</button>
+    <button onclick="makePost()">Fetch POST</button>
+  </div>
+
+  <div class="box">
+    <h3>💬 Input Simulation</h3>
+    <input id="nameInput" type="text" placeholder="Enter your name..." />
+    <button onclick="submitForm()">Submit</button>
+  </div>
+  <script>
+    // --------------- Console Logging ------------------
+    function logInfo() {
+      console.log("Bugzy Test Log — Everything is working fine!");
+    }
+
+    function logWarn() {
+      console.warn("Bugzy Test Warning — Something looks suspicious...");
+    }
+
+    function logError() {
+      console.error("Bugzy Test Error — Something went wrong!");
+    }
+
+    function throwError() {
+      throw new Error("Manual test error triggered for Bugzy logging.");
+    }
+
+    // --------------- Network Tests --------------------
+    async function makeGet() {
+      console.log("Sending test GET request...");
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+        const data = await res.json();
+        console.log("GET response:", data);
+      } catch (err) {
+        console.error("GET request failed:", err);
+      }
+    }
+
+    async function makePost() {
+      console.log("Sending test POST request...");
+      try {
+        const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: "Bugzy test", body: "Hello world" }),
+        });
+        const data = await res.json();
+        console.log("POST response:", data);
+      } catch (err) {
+        console.error("POST request failed:", err);
+      }
+    }
+
+    // --------------- Input Simulation -----------------
+    function submitForm() {
+      const name = document.getElementById("nameInput").value;
+      if (!name) {
+        console.warn("No name entered!");
+        alert("Please enter your name before submitting.");
+        return;
+      }
+      console.log(`Form submitted with name: ${name}`);
+      alert(`Thanks, ${name}! Check the console for logs.`);
+    }
+
+    // --------------- Background heartbeat -------------
+    setInterval(() => {
+      console.log("Heartbeat log — " + new Date().toLocaleTimeString());
+    }, 10000);
+  </script>
+</body>
+</html>
