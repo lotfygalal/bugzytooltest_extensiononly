@@ -1,49 +1,113 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bugzy QA Playground</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugzy Network Capture QA Playground</title>
 <style>
-body{font-family:Arial;background:#f4f4f4;padding:20px}
-.box{background:#fff;padding:15px;margin:15px 0;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-button{margin:4px;padding:8px 12px;border:none;background:#1976d2;color:#fff;border-radius:5px;cursor:pointer}
-button:hover{background:#0d5cab}h2{margin:0 0 10px}
-</style></head><body><h1>Bugzy Console & Network Playground</h1>
-<div class="box"><h2>Console</h2><button onclick="console.log('Bugzy log')">console.log</button><button onclick="console.info('Bugzy info')">console.info</button><button onclick="console.debug('Bugzy debug')">console.debug</button><button onclick="console.warn('Bugzy warning')">console.warn</button><button onclick="console.error('Bugzy error')">console.error</button><button onclick="console.trace('Bugzy trace')">console.trace</button><button onclick="console.table([{id:1,name:'A'},{id:2,name:'B'}])">console.table</button><button onclick="console.assert(false,'Assertion failed')">console.assert</button><button onclick="throwError()">Throw Error</button><button onclick="referenceError()">ReferenceError</button><button onclick="typeError()">TypeError</button><button onclick="rangeError()">RangeError</button><button onclick="syntaxError()">SyntaxError</button><button onclick="uriError()">URIError</button><button onclick="aggregateError()">AggregateError</button><button onclick="promiseReject()">Promise Rejection</button><button onclick="asyncError()">Async Error</button><button onclick="jsonError()">JSON Parse Error</button><button onclick="console.clear()">Clear Console</button></div><div class="box"><h2>Network Success</h2><button onclick="request('https://httpbin.org/status/200','GET')">GET 200</button><button onclick="request('https://httpbin.org/status/201','POST')">POST 201</button><button onclick="request('https://httpbin.org/status/200','PUT')">PUT 200</button><button onclick="request('https://httpbin.org/status/200','PATCH')">PATCH 200</button><button onclick="request('https://httpbin.org/status/200','DELETE')">DELETE 200</button></div><div class="box"><h2>3xx Status</h2><button onclick="request('https://httpbin.org/status/301','GET')">Status 301</button><button onclick="request('https://httpbin.org/status/302','GET')">Status 302</button><button onclick="request('https://httpbin.org/status/307','GET')">Status 307</button><button onclick="request('https://httpbin.org/status/308','GET')">Status 308</button></div><div class="box"><h2>4xx Status</h2><button onclick="request('https://httpbin.org/status/400','GET')">Status 400</button><button onclick="request('https://httpbin.org/status/401','GET')">Status 401</button><button onclick="request('https://httpbin.org/status/402','GET')">Status 402</button><button onclick="request('https://httpbin.org/status/403','GET')">Status 403</button><button onclick="request('https://httpbin.org/status/404','GET')">Status 404</button><button onclick="request('https://httpbin.org/status/405','GET')">Status 405</button><button onclick="request('https://httpbin.org/status/406','GET')">Status 406</button><button onclick="request('https://httpbin.org/status/408','GET')">Status 408</button><button onclick="request('https://httpbin.org/status/409','GET')">Status 409</button><button onclick="request('https://httpbin.org/status/410','GET')">Status 410</button><button onclick="request('https://httpbin.org/status/413','GET')">Status 413</button><button onclick="request('https://httpbin.org/status/415','GET')">Status 415</button><button onclick="request('https://httpbin.org/status/418','GET')">Status 418</button><button onclick="request('https://httpbin.org/status/422','GET')">Status 422</button><button onclick="request('https://httpbin.org/status/429','GET')">Status 429</button></div><div class="box"><h2>5xx Status</h2><button onclick="request('https://httpbin.org/status/500','GET')">Status 500</button><button onclick="request('https://httpbin.org/status/501','GET')">Status 501</button><button onclick="request('https://httpbin.org/status/502','GET')">Status 502</button><button onclick="request('https://httpbin.org/status/503','GET')">Status 503</button><button onclick="request('https://httpbin.org/status/504','GET')">Status 504</button></div><div class="box"><h2>Network Failures</h2><button onclick="failedFetch()">Failed Fetch</button><button onclick="dnsError()">DNS Error</button><button onclick="abortRequest()">Abort Request</button><button onclick="timeoutRequest()">Request Timeout</button><button onclick="invalidJson()">Invalid JSON</button><button onclick="slowRequest()">Slow Request</button><button onclick="corsError()">CORS Error</button></div>
+body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}
+button{margin:6px;padding:10px 16px;cursor:pointer}
+pre{background:#222;color:#0f0;padding:10px;min-height:120px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<h2>Bugzy Network Capture QA Playground</h2>
+
+
+<button onclick="getReq()">GET Request</button>
+<button onclick="postJson()">POST JSON (fetch)</button>
+<button onclick="postForm()">POST FormData (XHR)</button>
+<button onclick="postUrlEncoded()">POST URLSearchParams</button>
+<button onclick="redirectReq()">302 Redirect</button>
+<button onclick="binaryReq()">Binary Response</button>
+<button onclick="timeoutReq()">Timeout</button>
+<button onclick="abortReq()">Canceled</button>
+<button onclick="sendBeaconReq()">sendBeacon</button>
+
+<pre id="log">Ready...</pre>
+
 <script>
-async function request(url,method){
- try{
-  const opt={method};
-  const r=await fetch(url,opt);
-  console.log(method,url,"Status:",r.status);
- }catch(e){console.error(e);}
+const log=(m)=>document.getElementById("log").textContent=m;
+
+async function getReq(){
+ let r=await fetch("https://httpbin.org/get?token=123456&user=lotfy");
+ log(await r.text());
 }
-function throwError(){throw new Error("Manual Error");}
-function referenceError(){try{unknown.value()}catch(e){console.error(e);}}
-function typeError(){try{null.test()}catch(e){console.error(e);}}
-function rangeError(){try{new Array(-1)}catch(e){console.error(e);}}
-function syntaxError(){try{eval("{")}catch(e){console.error(e);}}
-function uriError(){try{decodeURIComponent("%")}catch(e){console.error(e);}}
-function aggregateError(){console.error(new AggregateError([new Error("One"),new Error("Two")],"Aggregate Error"));}
-function promiseReject(){Promise.reject(new Error("Unhandled Promise")); }
-function asyncError(){setTimeout(()=>{throw new Error("Async Error")},300);}
-function jsonError(){try{JSON.parse("{bad}")}catch(e){console.error(e);}}
-function failedFetch(){fetch("https://invalid.invalid").catch(e=>console.error(e));}
-function dnsError(){fetch("https://domain-does-not-exist-123456789.com").catch(e=>console.error(e));}
-function abortRequest(){
- const c=new AbortController();
- setTimeout(()=>c.abort(),500);
- fetch("https://httpbin.org/delay/5",{signal:c.signal}).catch(e=>console.error(e));
+
+async function postJson(){
+ let r=await fetch("https://httpbin.org/post",{
+ method:"POST",
+ headers:{
+   "Content-Type":"application/json",
+   "Authorization":"Bearer SECRET_TOKEN",
+   "x-api-key":"ABC123SECRET"
+ },
+ body:JSON.stringify({
+   name:"Lotfy",
+   password:"123456",
+   api_key:"XYZ987",
+   age:28
+ })
+ });
+ log(await r.text());
 }
-function timeoutRequest(){
- const c=new AbortController();
- setTimeout(()=>c.abort(),1000);
- fetch("https://httpbin.org/delay/10",{signal:c.signal}).catch(e=>console.error("Timeout",e));
+
+function postForm(){
+ const fd=new FormData();
+ fd.append("name","Lotfy");
+ fd.append("email","lotfy@test.com");
+ fd.append("password","123456");
+ const xhr=new XMLHttpRequest();
+ xhr.open("POST","https://httpbin.org/post");
+ xhr.onload=()=>log(xhr.responseText);
+ xhr.send(fd);
 }
-async function invalidJson(){
- try{
-   const r=await fetch("https://httpbin.org/html");
-   await r.json();
- }catch(e){console.error(e);}
+
+function postUrlEncoded(){
+ const p=new URLSearchParams();
+ p.append("username","lotfy");
+ p.append("secret","abcdef");
+ fetch("https://httpbin.org/post",{
+ method:"POST",
+ body:p
+ }).then(r=>r.text()).then(log);
 }
-function slowRequest(){fetch("https://httpbin.org/delay/5").then(r=>console.log("Slow:",r.status));}
-function corsError(){fetch("https://google.com",{mode:"cors"}).catch(e=>console.error(e));}
-window.addEventListener("error",e=>console.error("Global:",e.message));
-window.addEventListener("unhandledrejection",e=>console.error(e.reason));
-</script></body></html>
+
+function redirectReq(){
+ fetch("https://httpbin.org/redirect-to?url=https://httpbin.org/get");
+}
+
+function binaryReq(){
+ fetch("https://httpbin.org/image/png")
+ .then(r=>r.blob())
+ .then(b=>log("Binary size: "+b.size+" bytes"));
+}
+
+function timeoutReq(){
+ const xhr=new XMLHttpRequest();
+ xhr.open("GET","https://httpbin.org/delay/10");
+ xhr.timeout=2000;
+ xhr.ontimeout=()=>log("Timeout fired");
+ xhr.send();
+}
+
+function abortReq(){
+ const xhr=new XMLHttpRequest();
+ xhr.open("GET","https://httpbin.org/delay/10");
+ xhr.onload=()=>log(xhr.responseText);
+ xhr.send();
+ setTimeout(()=>{xhr.abort();log("Request canceled");},1000);
+}
+
+function sendBeaconReq(){
+ const ok=navigator.sendBeacon(
+   "https://httpbin.org/post",
+   JSON.stringify({event:"qa-test",token:"secret123"})
+ );
+ log("sendBeacon result: "+ok);
+}
+</script>
+
+
+</body>
+</html>
