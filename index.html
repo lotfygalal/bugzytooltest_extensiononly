@@ -2,112 +2,114 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bugzy Network Capture QA Playground</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bugzy QA Lab V2</title>
 <style>
-body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5}
-button{margin:6px;padding:10px 16px;cursor:pointer}
-pre{background:#222;color:#0f0;padding:10px;min-height:120px;white-space:pre-wrap}
+body{font-family:Arial;background:#f4f6f9;margin:0;padding:24px}
+h1{color:#18304a}
+.card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin:14px 0}
+button{padding:8px 14px;margin-top:10px}
+.status{margin-top:10px;padding:10px;border-radius:6px;background:#eee;display:none}
+.pass{background:#d4edda;color:#155724}
+.warn{background:#fff3cd;color:#856404}
+.fail{background:#f8d7da;color:#721c24}
+code{background:#eee;padding:2px 4px}
 </style>
 </head>
 <body>
-<h2>Bugzy Network Capture QA Playground</h2>
-
-
-<button onclick="getReq()">GET Request</button>
-<button onclick="postJson()">POST JSON (fetch)</button>
-<button onclick="postForm()">POST FormData (XHR)</button>
-<button onclick="postUrlEncoded()">POST URLSearchParams</button>
-<button onclick="redirectReq()">302 Redirect</button>
-<button onclick="binaryReq()">Binary Response</button>
-<button onclick="timeoutReq()">Timeout</button>
-<button onclick="abortReq()">Canceled</button>
-<button onclick="sendBeaconReq()">sendBeacon</button>
-
-<pre id="log">Ready...</pre>
-
+<h1>Bugzy Network Capture QA Lab V2</h1>
+<p>Run each scenario then verify it inside <b>Bugzy Network Dev Tool</b>.</p>
+<div id="tests"></div>
 <script>
-const log=(m)=>document.getElementById("log").textContent=m;
+const tests=[
+{t:"POST JSON (Fetch)",e:"Payload shown as structured JSON (not {}).",fn:fetchJSON},
+{t:"POST JSON (XHR)",e:"Payload shown as structured JSON (not {}).",fn:xhrJSON},
+{t:"POST FormData (XHR)",e:"Fields shown instead of {}.",fn:formData},
+{t:"POST URLSearchParams (XHR)",e:"Fields shown instead of {}.",fn:urlParams},
+{t:"302 Redirect",e:"Final URL + Requested URL + Redirected = Yes.",fn:redirect},
+{t:"Timeout",e:"Status should be Timeout.",fn:timeoutReq},
+{t:"Canceled",e:"Status should be Canceled.",fn:cancelReq},
+{t:"Binary Response",e:"Displayed as [Binary payload].",fn:binary},
+{t:"Sensitive Headers",e:"Authorization/x-api-key masked.",fn:fetchJSON},
+{t:"Default Redaction",e:"token/password redacted.",fn:fetchJSON},
+{t:"sendBeacon",e:"type=beacon, method=POST.",fn:beacon}
+];
 
-async function getReq(){
- let r=await fetch("https://httpbin.org/get?token=123456&user=lotfy");
- log(await r.text());
+const c=document.getElementById("tests");
+tests.forEach((x,i)=>{
+ c.innerHTML+=`<div class="card">
+ <h3>${i+1}. ${x.t}</h3>
+ <p><b>Expected:</b> ${x.e}</p>
+ <button onclick="run(${i})">Run Test</button>
+ <div class="status" id="s${i}"></div>
+ </div>`;
+});
+
+function msg(i,m,cls){
+ let d=document.getElementById("s"+i);
+ d.className="status "+cls;
+ d.style.display="block";
+ d.innerHTML=m;
 }
 
-async function postJson(){
- let r=await fetch("https://httpbin.org/post",{
- method:"POST",
- headers:{
-   "Content-Type":"application/json",
-   "Authorization":"Bearer SECRET_TOKEN",
-   "x-api-key":"ABC123SECRET"
- },
- body:JSON.stringify({
-   name:"Lotfy",
-   password:"123456",
-   api_key:"XYZ987",
-   age:28
- })
- });
- log(await r.text());
-}
+function run(i){tests[i].fn(i);}
 
-function postForm(){
- const fd=new FormData();
- fd.append("name","Lotfy");
- fd.append("email","lotfy@test.com");
- fd.append("password","123456");
- const xhr=new XMLHttpRequest();
- xhr.open("POST","https://httpbin.org/post");
- xhr.onload=()=>log(xhr.responseText);
- xhr.send(fd);
+async function fetchJSON(i){
+ await fetch("https://httpbin.org/post",{method:"POST",
+ headers:{"Content-Type":"application/json","Authorization":"Bearer SECRET","x-api-key":"KEY123"},
+ body:JSON.stringify({name:"Lotfy",password:"123456",token:"abc"})});
+ msg(i,"✅ Request generated. Verify Bugzy Dev Tool.","pass");
 }
-
-function postUrlEncoded(){
- const p=new URLSearchParams();
- p.append("username","lotfy");
- p.append("secret","abcdef");
- fetch("https://httpbin.org/post",{
- method:"POST",
- body:p
- }).then(r=>r.text()).then(log);
+function xhrJSON(i){
+ let x=new XMLHttpRequest();
+ x.open("POST","https://httpbin.org/post");
+ x.setRequestHeader("Content-Type","application/json");
+ x.onload=()=>msg(i,"✅ XHR JSON generated.","pass");
+ x.send(JSON.stringify({name:"Lotfy",password:"123"}));
 }
-
-function redirectReq(){
- fetch("https://httpbin.org/redirect-to?url=https://httpbin.org/get");
+function formData(i){
+ let f=new FormData();
+ f.append("name","Lotfy");f.append("password","123");
+ let x=new XMLHttpRequest();
+ x.open("POST","https://httpbin.org/post");
+ x.onload=()=>msg(i,"✅ FormData generated.","pass");
+ x.send(f);
 }
-
-function binaryReq(){
+function urlParams(i){
+ let p=new URLSearchParams();
+ p.append("username","lotfy");p.append("secret","abc");
+ let x=new XMLHttpRequest();
+ x.open("POST","https://httpbin.org/post");
+ x.onload=()=>msg(i,"✅ URLSearchParams generated.","pass");
+ x.send(p);
+}
+function redirect(i){
+ fetch("https://httpbin.org/redirect-to?url=https://httpbin.org/get")
+ .then(()=>msg(i,"✅ Redirect generated.","pass"));
+}
+function timeoutReq(i){
+ let x=new XMLHttpRequest();
+ x.open("GET","https://httpbin.org/delay/10");
+ x.timeout=2000;
+ x.ontimeout=()=>msg(i,"⏳ Timeout generated.","warn");
+ x.send();
+}
+function cancelReq(i){
+ let x=new XMLHttpRequest();
+ x.open("GET","https://httpbin.org/delay/10");
+ x.send();
+ setTimeout(()=>{x.abort();msg(i,"🛑 Request canceled.","fail");},1000);
+}
+function binary(i){
  fetch("https://httpbin.org/image/png")
  .then(r=>r.blob())
- .then(b=>log("Binary size: "+b.size+" bytes"));
+ .then(()=>msg(i,"✅ Binary response generated.","pass"));
 }
-
-function timeoutReq(){
- const xhr=new XMLHttpRequest();
- xhr.open("GET","https://httpbin.org/delay/10");
- xhr.timeout=2000;
- xhr.ontimeout=()=>log("Timeout fired");
- xhr.send();
-}
-
-function abortReq(){
- const xhr=new XMLHttpRequest();
- xhr.open("GET","https://httpbin.org/delay/10");
- xhr.onload=()=>log(xhr.responseText);
- xhr.send();
- setTimeout(()=>{xhr.abort();log("Request canceled");},1000);
-}
-
-function sendBeaconReq(){
- const ok=navigator.sendBeacon(
-   "https://httpbin.org/post",
-   JSON.stringify({event:"qa-test",token:"secret123"})
- );
- log("sendBeacon result: "+ok);
+function beacon(i){
+ let ok=navigator.sendBeacon("https://httpbin.org/post",JSON.stringify({event:"qa",token:"secret"}));
+ msg(i,ok?"✅ Beacon generated.":"❌ Beacon rejected.",ok?"pass":"fail");
 }
 </script>
-
-
+<!-- Paste Bugzy Widget snippet here -->
 </body>
 </html>
