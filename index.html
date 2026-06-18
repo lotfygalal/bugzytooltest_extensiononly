@@ -1,132 +1,49 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bugzy Test Playground</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f4f4f9;
-      color: #222;
-      margin: 0;
-      padding: 2rem;
-    }
-    h1 {
-      color: #0078d7;
-      text-align: center;
-    }
-    button {
-      background: #0078d7;
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.2rem;
-      margin: 0.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    .box {
-      background: white;
-      border-radius: 10px;
-      padding: 1rem;
-      margin: 1rem 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    input {
-      padding: 0.5rem;
-      margin-right: 0.5rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-  </style>
-</head>
-<body>
-  <h1>Bugzy Console & Network Test Site</h1>
-  
-  <div class="box">
-    <h3>🧠 Console Log Tests</h3>
-    <button onclick="logInfo()">Log Info</button>
-    <button onclick="logWarn()">Log Warning</button>
-    <button onclick="logError()">Log Error</button>
-    <button onclick="throwError()">Throw JS Error</button>
-  </div>
-
-  <div class="box">
-    <h3>🌐 Network Request Tests</h3>
-    <button onclick="makeGet()">Fetch GET</button>
-    <button onclick="makePost()">Fetch POST</button>
-  </div>
-
-  <div class="box">
-    <h3>💬 Input Simulation</h3>
-    <input id="nameInput" type="text" placeholder="Enter your name..." />
-    <button onclick="submitForm()">Submit</button>
-  </div>
-  <script>
-    // --------------- Console Logging ------------------
-    function logInfo() {
-      console.log("Bugzy Test Log — Everything is working fine!");
-    }
-
-    function logWarn() {
-      console.warn("Bugzy Test Warning — Something looks suspicious...");
-    }
-
-    function logError() {
-      console.error("Bugzy Test Error — Something went wrong!");
-    }
-
-    function throwError() {
-      throw new Error("Manual test error triggered for Bugzy logging.");
-    }
-
-    // --------------- Network Tests --------------------
-    async function makeGet() {
-      console.log("Sending test GET request...");
-      try {
-        const res = await fetch("https://jsonplaceholder.typicode.com/posts/1");
-        const data = await res.json();
-        console.log("GET response:", data);
-      } catch (err) {
-        console.error("GET request failed:", err);
-      }
-    }
-
-    async function makePost() {
-      console.log("Sending test POST request...");
-      try {
-        const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: "Bugzy test", body: "Hello world" }),
-        });
-        const data = await res.json();
-        console.log("POST response:", data);
-      } catch (err) {
-        console.error("POST request failed:", err);
-      }
-    }
-
-    // --------------- Input Simulation -----------------
-    function submitForm() {
-      const name = document.getElementById("nameInput").value;
-      if (!name) {
-        console.warn("No name entered!");
-        alert("Please enter your name before submitting.");
-        return;
-      }
-      console.log(`Form submitted with name: ${name}`);
-      alert(`Thanks, ${name}! Check the console for logs.`);
-    }
-
-    // --------------- Background heartbeat -------------
-    setInterval(() => {
-      console.log("Heartbeat log — " + new Date().toLocaleTimeString());
-    }, 10000);
-  </script>
-  
-</body>
-</html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bugzy QA Playground</title>
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+.box{background:#fff;padding:15px;margin:15px 0;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+button{margin:4px;padding:8px 12px;border:none;background:#1976d2;color:#fff;border-radius:5px;cursor:pointer}
+button:hover{background:#0d5cab}h2{margin:0 0 10px}
+</style></head><body><h1>Bugzy Console & Network Playground</h1>
+<div class="box"><h2>Console</h2><button onclick="console.log('Bugzy log')">console.log</button><button onclick="console.info('Bugzy info')">console.info</button><button onclick="console.debug('Bugzy debug')">console.debug</button><button onclick="console.warn('Bugzy warning')">console.warn</button><button onclick="console.error('Bugzy error')">console.error</button><button onclick="console.trace('Bugzy trace')">console.trace</button><button onclick="console.table([{id:1,name:'A'},{id:2,name:'B'}])">console.table</button><button onclick="console.assert(false,'Assertion failed')">console.assert</button><button onclick="throwError()">Throw Error</button><button onclick="referenceError()">ReferenceError</button><button onclick="typeError()">TypeError</button><button onclick="rangeError()">RangeError</button><button onclick="syntaxError()">SyntaxError</button><button onclick="uriError()">URIError</button><button onclick="aggregateError()">AggregateError</button><button onclick="promiseReject()">Promise Rejection</button><button onclick="asyncError()">Async Error</button><button onclick="jsonError()">JSON Parse Error</button><button onclick="console.clear()">Clear Console</button></div><div class="box"><h2>Network Success</h2><button onclick="request('https://httpbin.org/status/200','GET')">GET 200</button><button onclick="request('https://httpbin.org/status/201','POST')">POST 201</button><button onclick="request('https://httpbin.org/status/200','PUT')">PUT 200</button><button onclick="request('https://httpbin.org/status/200','PATCH')">PATCH 200</button><button onclick="request('https://httpbin.org/status/200','DELETE')">DELETE 200</button></div><div class="box"><h2>3xx Status</h2><button onclick="request('https://httpbin.org/status/301','GET')">Status 301</button><button onclick="request('https://httpbin.org/status/302','GET')">Status 302</button><button onclick="request('https://httpbin.org/status/307','GET')">Status 307</button><button onclick="request('https://httpbin.org/status/308','GET')">Status 308</button></div><div class="box"><h2>4xx Status</h2><button onclick="request('https://httpbin.org/status/400','GET')">Status 400</button><button onclick="request('https://httpbin.org/status/401','GET')">Status 401</button><button onclick="request('https://httpbin.org/status/402','GET')">Status 402</button><button onclick="request('https://httpbin.org/status/403','GET')">Status 403</button><button onclick="request('https://httpbin.org/status/404','GET')">Status 404</button><button onclick="request('https://httpbin.org/status/405','GET')">Status 405</button><button onclick="request('https://httpbin.org/status/406','GET')">Status 406</button><button onclick="request('https://httpbin.org/status/408','GET')">Status 408</button><button onclick="request('https://httpbin.org/status/409','GET')">Status 409</button><button onclick="request('https://httpbin.org/status/410','GET')">Status 410</button><button onclick="request('https://httpbin.org/status/413','GET')">Status 413</button><button onclick="request('https://httpbin.org/status/415','GET')">Status 415</button><button onclick="request('https://httpbin.org/status/418','GET')">Status 418</button><button onclick="request('https://httpbin.org/status/422','GET')">Status 422</button><button onclick="request('https://httpbin.org/status/429','GET')">Status 429</button></div><div class="box"><h2>5xx Status</h2><button onclick="request('https://httpbin.org/status/500','GET')">Status 500</button><button onclick="request('https://httpbin.org/status/501','GET')">Status 501</button><button onclick="request('https://httpbin.org/status/502','GET')">Status 502</button><button onclick="request('https://httpbin.org/status/503','GET')">Status 503</button><button onclick="request('https://httpbin.org/status/504','GET')">Status 504</button></div><div class="box"><h2>Network Failures</h2><button onclick="failedFetch()">Failed Fetch</button><button onclick="dnsError()">DNS Error</button><button onclick="abortRequest()">Abort Request</button><button onclick="timeoutRequest()">Request Timeout</button><button onclick="invalidJson()">Invalid JSON</button><button onclick="slowRequest()">Slow Request</button><button onclick="corsError()">CORS Error</button></div>
+<script>
+async function request(url,method){
+ try{
+  const opt={method};
+  const r=await fetch(url,opt);
+  console.log(method,url,"Status:",r.status);
+ }catch(e){console.error(e);}
+}
+function throwError(){throw new Error("Manual Error");}
+function referenceError(){try{unknown.value()}catch(e){console.error(e);}}
+function typeError(){try{null.test()}catch(e){console.error(e);}}
+function rangeError(){try{new Array(-1)}catch(e){console.error(e);}}
+function syntaxError(){try{eval("{")}catch(e){console.error(e);}}
+function uriError(){try{decodeURIComponent("%")}catch(e){console.error(e);}}
+function aggregateError(){console.error(new AggregateError([new Error("One"),new Error("Two")],"Aggregate Error"));}
+function promiseReject(){Promise.reject(new Error("Unhandled Promise")); }
+function asyncError(){setTimeout(()=>{throw new Error("Async Error")},300);}
+function jsonError(){try{JSON.parse("{bad}")}catch(e){console.error(e);}}
+function failedFetch(){fetch("https://invalid.invalid").catch(e=>console.error(e));}
+function dnsError(){fetch("https://domain-does-not-exist-123456789.com").catch(e=>console.error(e));}
+function abortRequest(){
+ const c=new AbortController();
+ setTimeout(()=>c.abort(),500);
+ fetch("https://httpbin.org/delay/5",{signal:c.signal}).catch(e=>console.error(e));
+}
+function timeoutRequest(){
+ const c=new AbortController();
+ setTimeout(()=>c.abort(),1000);
+ fetch("https://httpbin.org/delay/10",{signal:c.signal}).catch(e=>console.error("Timeout",e));
+}
+async function invalidJson(){
+ try{
+   const r=await fetch("https://httpbin.org/html");
+   await r.json();
+ }catch(e){console.error(e);}
+}
+function slowRequest(){fetch("https://httpbin.org/delay/5").then(r=>console.log("Slow:",r.status));}
+function corsError(){fetch("https://google.com",{mode:"cors"}).catch(e=>console.error(e));}
+window.addEventListener("error",e=>console.error("Global:",e.message));
+window.addEventListener("unhandledrejection",e=>console.error(e.reason));
+</script></body></html>
