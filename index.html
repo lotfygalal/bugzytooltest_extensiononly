@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,63 +52,64 @@ function msg(i,m,cls){
  d.style.display="block";
  d.innerHTML=m;
 }
+ 
 
 function run(i){tests[i].fn(i);}
 
 async function fetchJSON(i){
- await fetch("https://postman-echo.com/post",{method:"POST",
+ await fetch("https://httpbin.org/post",{method:"POST",
  headers:{"Content-Type":"application/json","Authorization":"Bearer SECRET","x-api-key":"KEY123"},
  body:JSON.stringify({name:"Lotfy",password:"123456",token:"abc"})});
- msg(i,"✅ Request generated. Verify Bugzy Dev Tool.","pass");
+ msg(i,"? Request generated. Verify Bugzy Dev Tool.","pass");
 }
 function xhrJSON(i){
  let x=new XMLHttpRequest();
- x.open("POST","https://postman-echo.com/post");
+ x.open("POST","https://httpbin.org/post");
  x.setRequestHeader("Content-Type","application/json");
- x.onload=()=>msg(i,"✅ XHR JSON generated.","pass");
+ x.onload=()=>msg(i,"? XHR JSON generated.","pass");
  x.send(JSON.stringify({name:"Lotfy",password:"123"}));
 }
 function formData(i){
  let f=new FormData();
  f.append("name","Lotfy");f.append("password","123");
  let x=new XMLHttpRequest();
- x.open("POST","https://postman-echo.com/post");
- x.onload=()=>msg(i,"✅ FormData generated.","pass");
+ x.open("POST","https://httpbin.org/post");
+ x.onload=()=>msg(i,"? FormData generated.","pass");
  x.send(f);
 }
 function urlParams(i){
  let p=new URLSearchParams();
  p.append("username","lotfy");p.append("secret","abc");
  let x=new XMLHttpRequest();
- x.open("POST","https://postman-echo.com/post");
- x.onload=()=>msg(i,"✅ URLSearchParams generated.","pass");
+ x.open("POST","https://httpbin.org/post");
+ x.onload=()=>msg(i,"? URLSearchParams generated.","pass");
  x.send(p);
 }
 function redirect(i){
- fetch("https://postman-echo.com/redirect-to?url=https://postman-echo.com/get")
- .then(()=>msg(i,"✅ Redirect generated.","pass"));
+ fetch("https://httpbin.org/redirect-to?url=https://httpbin.org/get")
+ .then(()=>msg(i,"? Redirect generated.","pass"));
 }
 function timeoutReq(i){
  let x=new XMLHttpRequest();
- x.open("GET","https://postman-echo.com/delay/10");
+ x.open("GET","https://httpbin.org/delay/10");
  x.timeout=2000;
- x.ontimeout=()=>msg(i,"⏳ Timeout generated.","warn");
+ x.ontimeout=()=>msg(i,"? Timeout generated.","warn");
  x.send();
 }
 function cancelReq(i){
  let x=new XMLHttpRequest();
- x.open("GET","https://postman-echo.com/delay/10");
+ x.open("GET","https://httpbin.org/delay/10");
  x.send();
- setTimeout(()=>{x.abort();msg(i,"🛑 Request canceled.","fail");},1000);
+ setTimeout(()=>{x.abort();msg(i,"?? Request canceled.","fail");},1000);
 }
 function binary(i){
  fetch("https://httpbin.org/image/png")
  .then(r=>r.blob())
- .then(()=>msg(i,"✅ Binary response generated.","pass"));
+ .then(()=>msg(i,"? Binary response generated.","pass"));
 }
 function beacon(i){
- let ok=navigator.sendBeacon("https://postman-echo.com/post",JSON.stringify({event:"qa",token:"secret"}));
- msg(i,ok?"✅ Beacon generated.":"❌ Beacon rejected.",ok?"pass":"fail");
+ let ok=navigator.sendBeacon("https://httpbin.org/post",JSON.stringify({event:"qa",token:"secret"}));
+ msg(i,ok?"? Beacon generated.":"? Beacon rejected.",ok?"pass":"fail");
 }
 </script>
 
